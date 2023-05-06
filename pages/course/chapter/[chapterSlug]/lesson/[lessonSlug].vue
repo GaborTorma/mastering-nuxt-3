@@ -48,11 +48,8 @@ const lesson = computed(() => {
   );
 });
 
-const title = computed(() => {
-  return `${lesson.value.title} - ${course.title}`;
-});
 useHead({
-  title,
+  title: computed(() => `${lesson.value.title} - ${course.title}`),
 });
 
 </script>
