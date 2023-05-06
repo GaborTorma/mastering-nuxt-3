@@ -2,29 +2,51 @@
   <label
     class="rounded text-white font-bold py-2 px-4 cursor-pointer"
     :class="{
-      'bg-green-500': modelValue,
-      'bg-gray-500': !modelValue,
+      'bg-green-500': isLessonComplete,
+      'bg-gray-500': !isLessonComplete,
     }"
   >
     <input
       type="checkbox"
-      :value="modelValue"
-      @input="() => $emit('update:modelValue', !modelValue)"
+      :value="isLessonComplete"
+      @input="toggleComplete"
       class="hidden"
     />
-    {{ modelValue ? 'Completed!' : 'Mark as complete' }}
+    {{ text }}
   </label>
 </template>
 
 <script setup>
-defineProps({
-  modelValue: {
-    type: Boolean,
-    default: false,
+const props = defineProps({
+  chapterNumber: {
+    type: Number,
+    required: true,
+  },
+  lessonNumber: {
+    type: Number,
+    required: true,
   },
 });
 
-defineEmits(['update:modelValue']);
+const progress = useLocalStorage('progress', []);
+
+const isLessonComplete = computed(() => 
+  progress.value[props.chapterNumber - 1]?.[props.lessonNumber - 1]
+);
+
+const text = computed(()=> 
+  isLessonComplete ? 'Completed!' : 'Mark as complete'
+)
+
+const toggleComplete = () => {
+  if (!progress.value[props.chapterNumber - 1]) {
+    progress.value[props.chapterNumber - 1] = [];
+  }
+
+  progress.value[props.chapterNumber- 1][
+    props.lessonNumber - 1
+  ] = !isLessonComplete.value;
+};
 </script>
 
 <style scoped>
